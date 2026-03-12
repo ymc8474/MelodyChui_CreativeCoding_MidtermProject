@@ -12,6 +12,9 @@ let flickerTime = 70; //everytime the counter reaches this number, the screen fl
 let blinkTime = 30; //determines how long the flicker/blinks lasts (based on the increments)
 //the specific numbers produced above are chosen through trial and error, tested until my liking
 
+let x = 0; //circle starting x position
+let y = 0; //circle starting y position
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
 }
@@ -21,6 +24,7 @@ function draw() {
 
   gradient(); //for the background
   flicker(); //pulsating effect
+  movingCircle(); //circle tailing cursor (like a light)
 }
 
 function gradient() { //note: had to test a lot of trial and error math to make it work the way I imagined it to be
@@ -45,11 +49,19 @@ function gradient() { //note: had to test a lot of trial and error math to make 
   movement += 5; //continous increment loop, can control speed 
 }
 
-function flicker() {
+function flicker() { //simulating a blinking/flickering screen
   counter ++;
-  if (counter % flickerTime < blinkTime) {
+  if (counter % flickerTime < blinkTime) { //if it's within the increment time interval, it will blink for the blinkTime set amount of increment time
     background(0); //black
   } else {} //nothing needs to happen, so nothing will be in the else statment (as it goes back to its original default form)
 }
 
-// NOTE TO SELF: FOR THE MOVING LIGHT, IT CAN BE LIKE CHASING THE CURSOR AS IT MOVES, EXAMPLE IN CLASS WITH THE m.disaply one is good to reference
+function movingCircle() { //circle that follows the cursor around, similar to the vector examples learned in class
+  //really helpful learning reference: https://www.geeksforgeeks.org/javascript/create-an-object-that-follows-the-mouse-pointer-using-p5-js/
+  x += (mouseX - x) * 0.06; //inside the () is the distance from the cursor, as it gets closer; and the += is the constantly update the posiiton as it runs
+  y += (mouseY - y) * 0.06; //the 0.06 refers to it being closing the gap by 6% each increment update as it continuously keeps looping; the smaller the percentage the slower the circle travels; this number was also chosen through trial and error
+  noStroke();
+  fill(200, 200); //light grey opaque "light"
+  //note to self: opacity value is from 1-255
+  ellipse(x, y, 100, 100);
+}
