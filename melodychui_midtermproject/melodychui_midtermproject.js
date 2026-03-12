@@ -1,11 +1,16 @@
 //Adjective: Ominous
 
 /* --- NOTES ---
-Window Width: 1512px
-Window Height: 982px
+14" MacbookPro Window Width: 1512px
+14" MacbookPro Window Height: 982px
 */
 
 let movement = 0; //gradient line progression
+
+let counter = 0; //counts the time in between before each flicker
+let flickerTime = 70; //everytime the counter reaches this number, the screen flickers
+let blinkTime = 30; //determines how long the flicker/blinks lasts (based on the increments)
+//the specific numbers produced above are chosen through trial and error, tested until my liking
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -15,9 +20,10 @@ function draw() {
   background(255); //white
 
   gradient(); //for the background
+  flicker(); //pulsating effect
 }
 
-function gradient() { //had to test a lot of trial and error math to make it work the way I imagined it to be
+function gradient() { //note: had to test a lot of trial and error math to make it work the way I imagined it to be
   stroke(0); //black
   
   for(let i = 0; i < windowHeight; i++) {
@@ -38,3 +44,12 @@ function gradient() { //had to test a lot of trial and error math to make it wor
   }
   movement += 5; //continous increment loop, can control speed 
 }
+
+function flicker() {
+  counter ++;
+  if (counter % flickerTime < blinkTime) {
+    background(0); //black
+  } else {} //nothing needs to happen, so nothing will be in the else statment (as it goes back to its original default form)
+}
+
+// NOTE TO SELF: FOR THE MOVING LIGHT, IT CAN BE LIKE CHASING THE CURSOR AS IT MOVES, EXAMPLE IN CLASS WITH THE m.disaply one is good to reference
