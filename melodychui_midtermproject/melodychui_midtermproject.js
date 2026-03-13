@@ -15,6 +15,8 @@ let blinkTime = 30; //determines how long the flicker/blinks lasts (based on the
 let x = 0; //circle starting x position
 let y = 0; //circle starting y position
 
+let num = 0; //used for the lines part; starting number to then allow it to increment and update the movement by frames
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
 }
@@ -23,6 +25,7 @@ function draw() {
   background(255); //white
 
   gradient(); //for the background
+  wavyLines() //background effect
   flicker(); //pulsating effect
   movingCircle(); //circle tailing cursor (like a light)
 }
@@ -65,3 +68,39 @@ function movingCircle() { //circle that follows the cursor around, similar to th
   //note to self: opacity value is from 1-255
   ellipse(x, y, 100, 100);
 }
+
+function wavyLines() { //moving wiggly random generated lines in a semi diagonal pattern
+  stroke(255); //white
+  strokeWeight(1);
+  noFill();
+
+  num += 0.005; //adjusts the line movement for every frame/increment/update
+
+  for (let i = 0; i < 200; i++) { //generates 200 lines displayed at a time
+    beginShape(); //generates the start for each line
+      for (let n = 0; n <= windowWidth; n += 10) { //marks a "turning" point for every 10px on screen moving horizontally (across the x axis)
+        vertex(n, -900 + i*10 + n*0.3 + noise(n*0.002, i*0.5, num) * 200); //generates the points in between, going across the screen
+        //note to self | vertex parameters: vertex (x, y) | noise parameters: noise(x, y, z); z: is (change in) time dimension
+        /* --- HOW IT WORKS ---
+        * it took so long to add and remix the variables and numbers to fit it perfectly to how I wanted it to drag across diagonally (from top left to bottom right)
+        [Figuring out the how the y position works in the vertex]
+        -900: is to push it (roughly 900px) off the screen (since the screen height is roughly 900px), so that the line can start from be generated diagonally and moving downwards from top left to bottom right
+        i*10: each line is 10px lower than the precious line (in the y direction); without ut, all the lines would stack together
+        n*0.3: makes sure that the y position moves down 0.4px in y direction (diagonally) for every 1px in x direction
+        noise(): adds the "natural randomness"; without it would just be straight lines
+        *200: makes sure that the vertical distance of each line remains within a 200px height
+
+        * I discovered noise() through learning more about natural generation/movement methods 
+        * note from LadyK: "noise gives you back a number that has some relation to the previous"
+        * (instead of random, since they have no relation)
+        [How the noise works]
+        noise(n*0.002,  , ): subtle change in the x position every line
+        noise( , 1*0.5, ): change in the y position of every line
+        noise( , , z): movement over the frame/time it is updated
+      */
+      }
+    endShape(); //generates the end for each line and connects all the points together
+  }
+}
+
+//NOTE TO SELF: I probably have to start using arrays somewhere...
