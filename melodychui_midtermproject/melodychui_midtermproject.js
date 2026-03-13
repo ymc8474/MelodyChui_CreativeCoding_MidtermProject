@@ -17,6 +17,9 @@ let y = 0; //circle starting y position
 
 let num = 0; //used for the lines part; starting number to then allow it to increment and update the movement by frames
 
+let screenSplatters = []; //keep a list/array of the current splatters on screen before it updates/changes
+let splatterTime = 0; //going to be used to track the time through millis() (which we learned from class)
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
 }
@@ -26,6 +29,7 @@ function draw() {
 
   gradient(); //for the background
   wavyLines() //background effect
+  splatter();
   flicker(); //pulsating effect
   movingCircle(); //circle tailing cursor (like a light)
 }
@@ -103,4 +107,52 @@ function wavyLines() { //moving wiggly random generated lines in a semi diagonal
   }
 }
 
-//NOTE TO SELF: I probably have to start using arrays somewhere...
+function splatter() { //random paint-like objects appearing and dissapearing on screen
+  if(millis() > splatterTime + 500) { //generates a splatter every half a second
+    splatterTime = millis(); //helps reset the time so it generates a new splatter when it reaches the proper incrementaiton time
+
+    let splatterX = random(windowWidth); //random main paint dot X position
+    let splatterY = random(windowHeight); //random main paint dot Y position
+    let blobs = [] //for all the dots generated for a single splatter
+    //these cannot be placed globally as it cannot run before the skecth starts
+
+    //note to self: add the {} inside the push(); in order to add multiple variables at once
+    blobs.push({ //adding the variables into the list (temporarily)
+      splatterXPos: splatterX, //this part is creating the main center dot (then the smaller dots to create the splatter affect are generated around it)
+      splatterYPos: splatterY,
+      w: random(40, 80), 
+      h: random(40, 80),
+    }); 
+
+    for (let i = 0; i < 8; i++) { //creates 8 small dots around each big splotch
+      let position = random(TWO_PI); //random position around the blob center (any degree)
+      let distance = random(10, 80); //random reasonable nearby distance from the center
+      blobs.push ({ 
+        splatterXPos: splatterX + sin(position) * distance, //from the center x position, adjust it in making a new random center and away and randomly around the original (main dot's) center
+        splatterYPos: splatterY + cos(position) * distance, //same but for y position
+        //note: sin and cos doesn't matter which one is where, but they cannot be the same for x and y or else it will make a diagonal, whereas I want it to be scattered
+        w: random(5, 25), //these variables are added so that the dots generated are natural looking and not mostly just circular/round
+        h: random(5, 25)
+      }); 
+    }
+    screenSplatters.push({blobby: blobs, frameTime: 0}) //adds the generated splatter to the current list (temporarily, as it will be removed later)
+  }
+  
+  for(let i = 0; i < screenSplatters.length; i++) { //for the amount of splatters on screen
+    let nextBlob = screenSplatters[i]; //grabbing the next splatter from the temporary list
+    noStroke(); 
+    fill(0); //black
+
+    for(let n = 0; n < nextBlob.blobby.length; n++){ //for the blob in the list, then moving on to the item after
+      let specificBlob = nextBlob.blobby[n]; //labelling the specific blob for that instance in the loop to refer to
+      ellipse(specificBlob.splatterXPos, specificBlob.splatterYPos, specificBlob.w, specificBlob.h); //create/draw the actual sploth (main dot) and surrounding dots
+    }
+    nextBlob.frameTime += 1; //increases/increments to the next frame
+  }
+
+  for(let i = screenSplatters.length - 1; i >= 0; i--) { //goes from the oldest (earliest) inserted splatter in the list
+    if(screenSplatters[i].frameTime >= 120) { //for splatters older than 120 frames
+      screenSplatters.splice(i, 1); //splice() is used to remove the item from that position in the array
+    }
+  }
+}
