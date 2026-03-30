@@ -25,13 +25,31 @@ function setup() {
 }
 
 function draw() { 
-  background(255); //white
+  background(255); // white
 
-  gradient(); //for the background
-  wavyLines() //background effect
-  splatter();
-  flicker(); //pulsating effect
+  
+
+  let screenTime = millis() % 20000; 
+
+  if (screenTime < 4000) {
+    gradient();
+  } else if (screenTime < 8000) {
+    background(0); //black
+    wavyLines();
+  } else if (screenTime < 12000) {
+    background(50); //dark grey
+    splatter();
+  } else if (screenTime < 16000) {
+    flicker(); //pulsating effect
+  }
+
   movingCircle(); //circle tailing cursor (like a light)
+
+  // gradient(); //for the background
+  // wavyLines() //background effect
+  // splatter();
+  // flicker(); //pulsating effect
+  // movingCircle(); //circle tailing cursor (like a light)
 }
 
 function gradient() { //note: had to test a lot of trial and error math to make it work the way I imagined it to be
