@@ -19,6 +19,7 @@ let num = 0; //used for the lines part; starting number to then allow it to incr
 
 let screenSplatters = []; //keep a list/array of the current splatters on screen before it updates/changes
 let splatterTime = 0; //going to be used to track the time through millis() (which we learned from class)
+let splatterSize = 0; //starting point for the splatters to increase in size
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -27,29 +28,32 @@ function setup() {
 function draw() { 
   background(255); // white
 
-  
+  let screenTime = millis() //no more loop
 
-  let screenTime = millis() % 20000; 
-
-  if (screenTime < 4000) {
+  if (screenTime < 3000) { //3 seconds
+    flicker(); //pulsating effect
+  } else if (screenTime < 8000) { //5 seconds
     gradient();
-  } else if (screenTime < 8000) {
+  } else if (screenTime < 11000) { //3 seconds
+    flicker();
+  } else if (screenTime < 16000) { //5 seconds
     background(0); //black
     wavyLines();
-  } else if (screenTime < 12000) {
-    background(50); //dark grey
+  } else if (screenTime < 21000) { //5 seconds
+    background(0); //black
+    wavyLines();
+    flicker();
+  } else if (screenTime < 24000) { //3 seconds
+    flicker() 
+  } else if (screenTime < 39000) { //15 seconds
+    background(0); //black
+    splatter(); 
+  } else {
+    background(60, 6, 6); //blood crimson red
     splatter();
-  } else if (screenTime < 16000) {
-    flicker(); //pulsating effect
   }
 
   movingCircle(); //circle tailing cursor (like a light)
-
-  // gradient(); //for the background
-  // wavyLines() //background effect
-  // splatter();
-  // flicker(); //pulsating effect
-  // movingCircle(); //circle tailing cursor (like a light)
 }
 
 function gradient() { //note: had to test a lot of trial and error math to make it work the way I imagined it to be
@@ -83,8 +87,8 @@ function flicker() { //simulating a blinking/flickering screen
 
 function movingCircle() { //circle that follows the cursor around, similar to the vector examples learned in class
   //really helpful learning reference: https://www.geeksforgeeks.org/javascript/create-an-object-that-follows-the-mouse-pointer-using-p5-js/
-  x += (mouseX - x) * 0.06; //inside the () is the distance from the cursor, as it gets closer; and the += is the constantly update the posiiton as it runs
-  y += (mouseY - y) * 0.06; //the 0.06 refers to it being closing the gap by 6% each increment update as it continuously keeps looping; the smaller the percentage the slower the circle travels; this number was also chosen through trial and error
+  x += (mouseX - x) * 0.01; //inside the () is the distance from the cursor, as it gets closer; and the += is the constantly update the posiiton as it runs
+  y += (mouseY - y) * 0.01; //the 0.01 refers to it being closing the gap by 1% each increment update as it continuously keeps looping; the smaller the percentage the slower the circle travels; this number was also chosen through trial and error
   noStroke();
   fill(200, 200); //light grey opaque "light"
   //note to self: opacity value is from 1-255
@@ -126,7 +130,7 @@ function wavyLines() { //moving wiggly random generated lines in a semi diagonal
 }
 
 function splatter() { //random paint-like objects appearing and dissapearing on screen
-  if(millis() > splatterTime + 500) { //generates a splatter every half a second
+  if(millis() > splatterTime + max(100, 500 - splatterSize * 20)) { //making it move faster and faster
     splatterTime = millis(); //helps reset the time so it generates a new splatter when it reaches the proper incrementaiton time
 
     let splatterX = random(windowWidth); //random main paint dot X position
@@ -138,28 +142,29 @@ function splatter() { //random paint-like objects appearing and dissapearing on 
     blobs.push({ //adding the variables into the list (temporarily)
       splatterXPos: splatterX, //this part is creating the main center dot (then the smaller dots to create the splatter affect are generated around it)
       splatterYPos: splatterY,
-      w: random(40, 80), 
-      h: random(40, 80),
+      w: random(40, 80) * (1 + splatterSize * 0.1), //bigger each generation by 20%
+      h: random(40, 80) * (1 + splatterSize * 0.1)
     }); 
 
     for (let i = 0; i < 8; i++) { //creates 8 small dots around each big splotch
       let position = random(TWO_PI); //random position around the blob center (any degree)
-      let distance = random(10, 80); //random reasonable nearby distance from the center
+      let distance = random(10, 80) * (1 + splatterSize * 0.1); //random reasonable nearby distance from the center
       blobs.push ({ 
         splatterXPos: splatterX + sin(position) * distance, //from the center x position, adjust it in making a new random center and away and randomly around the original (main dot's) center
         splatterYPos: splatterY + cos(position) * distance, //same but for y position
         //note: sin and cos doesn't matter which one is where, but they cannot be the same for x and y or else it will make a diagonal, whereas I want it to be scattered
-        w: random(5, 25), //these variables are added so that the dots generated are natural looking and not mostly just circular/round
-        h: random(5, 25)
+        w: random(5, 25) * (1 + splatterSize * 0.1), //these variables are added so that the dots generated are natural looking and not mostly just circular/round
+        h: random(5, 25) * (1 + splatterSize * 0.1)
       }); 
     }
     screenSplatters.push({blobby: blobs, frameTime: 0}) //adds the generated splatter to the current list (temporarily, as it will be removed later)
+    splatterSize++; //keeps increasing the size of the splatters
   }
   
   for(let i = 0; i < screenSplatters.length; i++) { //for the amount of splatters on screen
     let nextBlob = screenSplatters[i]; //grabbing the next splatter from the temporary list
     noStroke(); 
-    fill(0); //black
+    fill(60, 6, 6); //blood crimson color
 
     for(let n = 0; n < nextBlob.blobby.length; n++){ //for the blob in the list, then moving on to the item after
       let specificBlob = nextBlob.blobby[n]; //labelling the specific blob for that instance in the loop to refer to
