@@ -34,12 +34,14 @@ function draw() {
 
   if (screenTime < 7000) { //7 seconds
     flicker(); //pulsating effect
+    movingCircle(); //circle tailing cursor (like a light)
   } else if (screenTime < 12000) { //5 seconds
     gradient();
   } else if (screenTime <17000) { //5 seconds
     flickerTime = 50;
     blinkTime = 20;
     flicker();
+    movingCircle();
   } else if (screenTime < 22000) { //5 seconds
     background(0); //black
     wavyLines();
@@ -48,6 +50,7 @@ function draw() {
     flickerTime = 30;
     blinkTime = 10;
     flicker() 
+    movingCircle();
   } else if (screenTime < 400000) { //15 seconds
     background(0); //black
     splatter(); 
@@ -55,8 +58,6 @@ function draw() {
     background(60, 6, 6); //blood crimson red
     splatter();
   }
-
-  movingCircle(); //circle tailing cursor (like a light)
 }
 
 function gradient() { //note: had to test a lot of trial and error math to make it work the way I imagined it to be
@@ -104,7 +105,7 @@ function wavyLines() { //moving wiggly random generated lines in a semi diagonal
   strokeWeight(1);
   noFill();
 
-  lineSpeed = max(0.000000000000001, lineSpeed - 0.0007); //the smaller the value, the less movement, eventually making the movement almost stop
+  lineSpeed = max(0.000000000000001, lineSpeed - 0.001); //the smaller the value, the less movement, eventually making the movement almost stop
   num += lineSpeed; //adjusts the line movement for every frame/increment/update
 
   for (let i = 0; i < 200; i++) { //generates 200 lines displayed at a time
