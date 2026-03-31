@@ -5,6 +5,7 @@
 14" MacbookPro Window Height: 982px
 */
 
+let gradientSpeed = 5;
 let movement = 0; //gradient line progression
 
 let counter = 0; //counts the time in between before each flicker
@@ -16,6 +17,7 @@ let x = 0; //circle starting x position
 let y = 0; //circle starting y position
 
 let num = 0; //used for the lines part; starting number to then allow it to increment and update the movement by frames
+let lineSpeed = 0.2; //controls the speed of the moving lines
 
 let screenSplatters = []; //keep a list/array of the current splatters on screen before it updates/changes
 let splatterTime = 0; //going to be used to track the time through millis() (which we learned from class)
@@ -28,27 +30,28 @@ function setup() {
 function draw() { 
   background(255); // white
 
-  let screenTime = millis() //no more loop
+  let screenTime = millis() //no more loop, and just counting time
 
-  if (screenTime < 3000) { //3 seconds
+  if (screenTime < 7000) { //7 seconds
     flicker(); //pulsating effect
-  } else if (screenTime < 8000) { //5 seconds
+  } else if (screenTime < 12000) { //5 seconds
     gradient();
-  } else if (screenTime < 11000) { //3 seconds
+  } else if (screenTime <17000) { //5 seconds
+    flickerTime = 50;
+    blinkTime = 20;
     flicker();
-  } else if (screenTime < 16000) { //5 seconds
+  } else if (screenTime < 22000) { //5 seconds
     background(0); //black
     wavyLines();
-  } else if (screenTime < 21000) { //5 seconds
-    background(0); //black
-    wavyLines();
-    flicker();
-  } else if (screenTime < 24000) { //3 seconds
+  } else if (screenTime < 25000) { //3 seconds
+    background(255); //white
+    flickerTime = 30;
+    blinkTime = 10;
     flicker() 
-  } else if (screenTime < 39000) { //15 seconds
+  } else if (screenTime < 400000) { //15 seconds
     background(0); //black
     splatter(); 
-  } else {
+  } else { //remainder of the scene
     background(60, 6, 6); //blood crimson red
     splatter();
   }
@@ -75,11 +78,12 @@ function gradient() { //note: had to test a lot of trial and error math to make 
     stroke(col); //line color
     line(0, i, windowWidth, i); //draws a line after each loop
   }
-  movement += 5; //continous increment loop, can control speed 
+  gradientSpeed += 0.1;
+  movement += gradientSpeed;
 }
 
 function flicker() { //simulating a blinking/flickering screen
-  counter ++;
+  counter++; //frame increment
   if (counter % flickerTime < blinkTime) { //if it's within the increment time interval, it will blink for the blinkTime set amount of increment time
     background(0); //black
   } else {} //nothing needs to happen, so nothing will be in the else statment (as it goes back to its original default form)
@@ -100,7 +104,8 @@ function wavyLines() { //moving wiggly random generated lines in a semi diagonal
   strokeWeight(1);
   noFill();
 
-  num += 0.005; //adjusts the line movement for every frame/increment/update
+  lineSpeed = max(0.000000000000001, lineSpeed - 0.0007); //the smaller the value, the less movement, eventually making the movement almost stop
+  num += lineSpeed; //adjusts the line movement for every frame/increment/update
 
   for (let i = 0; i < 200; i++) { //generates 200 lines displayed at a time
     beginShape(); //generates the start for each line
